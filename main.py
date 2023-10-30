@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from create_annotations import (
     create_image_annotation,
     create_annotation_from_yolo_format,
@@ -12,16 +11,31 @@ import json
 import numpy as np
 import imagesize
 
-#################################################
-# Change the classes depend on your own dataset.#
-# Don't change the list name 'Classes'          #
-#################################################
 
-YOLO_DARKNET_SUB_DIR = "YOLO_darknet"
+# Set the file path in Blob storoage for the absolute url info.ls
+FILE_URL = f"https://sceneradatasets.blob.core.windows.net/ise-test-byjoel/images"
+    
+# You do not need to specify YOLO_DARKNET_SUB_DIR.
+YOLO_DARKNET_SUB_DIR = ""
 
+
+# Chnage the classes depend on your own dataset.
+# Do not change the list name 'Classes'.
 classes = [
-    "matricula",
-    "cara"
+    "person",
+    "vest"
+    # "bicycle",
+    # "car",
+    # "motorcycle",
+    # "truck",
+    # "backpack",
+    # "handbag",
+    # "suitcase",
+    # "vest",
+    # "helmet",
+    # "barrierArm",
+    # "lying",
+    # "box"
 ]
 
 
@@ -38,7 +52,7 @@ def get_images_info_and_annotations(opt):
             read_lines = fp.readlines()
         file_paths = [Path(line.replace("\n", "")) for line in read_lines]
 
-    image_id = 0
+    image_id = 1
     annotation_id = 1  # In COCO dataset format, you must start annotation id with '1'
 
     for file_path in file_paths:
@@ -231,7 +245,13 @@ def main(opt):
         (
             coco_format["images"],
             coco_format["annotations"],
+            
         ) = get_images_info_and_annotations(opt)
+        
+        for i in coco_format["images"]:
+            abs_url = FILE_URL + f"/{i['file_name']}"
+            print(abs_url)
+            i['absolute_url'] = abs_url
 
         for index, label in enumerate(classes):
             categories = {
